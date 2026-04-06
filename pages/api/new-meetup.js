@@ -5,8 +5,6 @@ export default async function handler(req, res) {
     try {
       const data = req.body;
 
-      console.log("API HIT");
-
       const client = await MongoClient.connect(
         "mongodb+srv://avicodesmith_db_user:A4ebsIAF7pEUaLoa@cluster0.bvq1vp5.mongodb.net/meetups?retryWrites=true&w=majority&authSource=admin",
       );

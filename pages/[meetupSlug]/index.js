@@ -1,4 +1,5 @@
 import MeetupDetailPage from "../../components/meetups/MeetupDetail";
+import { MongoClient } from "mongodb";
 
 export default function MeetupDetail(props) {
   const data = props.meetupDetail;
@@ -14,25 +15,40 @@ export default function MeetupDetail(props) {
 }
 
 export async function getStaticPaths() {
+  const client = await MongoClient.connect(
+    "mongodb+srv://avicodesmith_db_user:A4ebsIAF7pEUaLoa@cluster0.bvq1vp5.mongodb.net/meetups?retryWrites=true&w=majority&authSource=admin",
+  );
+
+  const db = client.db();
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupSlug: "m1",
-        },
+    paths: meetups.map((meetup) => ({
+      params: {
+        meetupSlug: meetup._id.toString(),
       },
-      {
-        params: {
-          meetupSlug: "m2",
-        },
-      },
-    ],
+    })),
+    // paths: [
+    //   {
+    //     params: {
+    //       meetupSlug: "m1",
+    //     },
+    //   },
+    //   {
+    //     params: {
+    //       meetupSlug: "m2",
+    //     },
+    //   },
+    // ],
   };
 }
 
 export async function getStaticProps(context) {
   const id = context.params.meetupSlug;
+
   return {
     props: {
       meetupDetail: {
